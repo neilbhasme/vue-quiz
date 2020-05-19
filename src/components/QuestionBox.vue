@@ -12,7 +12,7 @@
           v-for="(answer, index) in shuffledAnswers"
           :key="index"
           @click="selectAnswer(index)"
-          :class="[selectedIndex === index ? `selected` : ``]"
+          :class="answerClass(index)"
         >
           {{ answer }}
         </b-list-group-item>
@@ -21,7 +21,8 @@
 
       <b-button 
         @click="submitAnswer" 
-        variant="primary">
+        variant="primary"
+        :disabled= "selectedIndex === null || answered">
         Submit
       </b-button>
 
@@ -46,7 +47,8 @@ export default {
       return {
         selectedIndex: null,
         correctIndex: null, 
-        shuffledAnswers: []
+        shuffledAnswers: [],
+        answered: false
       }
   },
   computed: {
@@ -61,6 +63,7 @@ export default {
       immediate: true,  //true makes call it when the prop is first created and everytime when the prop is updated (latter is done anyway in watch, but former ie because of immediate = true
       handler() {
         this.selectedIndex = null
+        this.answered = false
         this.shuffleAnswers() 
       }
     }
@@ -81,14 +84,25 @@ export default {
     },
     submitAnswer() {
       let isCorrect = false
-      console.log("this.selectedIndex is " + this.selectedIndex)
-      console.log("this.correctIndex is " + this.correctIndex)
       if (this.selectedIndex === this.correctIndex) {
-        console.log("this.correctIndex is " + isCorrect)
         isCorrect = true
       }
-      console.log("this.correctIndex just before incremennt is " + isCorrect)
+      this.answered = true
       this.increment(isCorrect)
+    },
+    answerClass(index) {
+      let answerClass = ''
+      if (!this.answered && this.selectedIndex === index) {
+        answerClass = 'selected'
+      } else if (this.answered && this.correctIndex === index) {
+        answerClass = 'correct'
+      } else if (this.answered &&
+        this.selectedIndex === index &&
+        this.correctIndex !== index
+      ) {
+        answerClass = 'incorrect'
+      }
+      return answerClass
     }
   }
 }

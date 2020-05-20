@@ -26,7 +26,10 @@
         Submit
       </b-button>
 
-      <b-button @click="incrementIndexQuestion" variant="success">
+      <b-button 
+        @click="incrementIndexQuestion" 
+        variant="success"
+        :disabled= "selectedIndex === null || !answered">
         Next
       </b-button>
 
